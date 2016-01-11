@@ -41,7 +41,7 @@
 *  cursors()       position cursor at [1,24] (saves memory)
 *  cl_line(x,y)            Clear line at [1,y] and leave cursor at [x,y]
 *  cl_up(x,y)          Clear screen from [x,1] to current line.
-*  cl_dn(x,y)      Clear screen from [1,y] to end of display. 
+*  cl_dn(x,y)      Clear screen from [1,y] to end of display.
 *  lstandout(str)       Print the string in standout mode.
 *  set_score_output()  Called when output should be literally printed.
 ** ttputch(ch)     Print one character in decoded output buffer.
@@ -107,17 +107,17 @@ static void warn (char *);
 /*
 *  Subroutine to set up terminal in correct mode for game
 *
-*  Attributes off, clear screen, set scrolling region, set tty mode 
+*  Attributes off, clear screen, set scrolling region, set tty mode
 */
 void
 setupvt100 (void)
 {
 
-  clear ();
+	clear ();
 
-  setscroll ();
+	setscroll ();
 
-  scbr ();			/* system("stty cbreak -echo"); */
+	scbr ();			/* system("stty cbreak -echo"); */
 }
 
 
@@ -125,19 +125,19 @@ setupvt100 (void)
 /*
 *  Subroutine to clean up terminal when the game is over
 *
-*  Attributes off, clear screen, unset scrolling region, restore tty mode 
+*  Attributes off, clear screen, unset scrolling region, restore tty mode
 */
 void
 clearvt100 (void)
 {
 
-  ansiterm_clean_up ();
+	ansiterm_clean_up ();
 
-  resetscroll ();
+	resetscroll ();
 
-  /* clear(); *//* why does this routine need to clear() ? */
+	/* clear(); *//* why does this routine need to clear() ? */
 
-  sncbr ();			/* system("stty -cbreak echo"); */
+	sncbr ();			/* system("stty -cbreak echo"); */
 }
 
 
@@ -148,23 +148,23 @@ clearvt100 (void)
 char
 ttgetch (void)
 {
-  char byt;
+	char byt;
 
 #ifdef EXTRA
-  cdesc[BYTESIN]++;
+	cdesc[BYTESIN]++;
 #endif
 
-  lflush ();			/* be sure output buffer is flushed */
+	lflush ();			/* be sure output buffer is flushed */
 
-  byt = (char) (*getchfn) ();
+	byt = (char) (*getchfn) ();
 
-  if (byt == '\r')
-    {
+	if (byt == '\r')
+	{
 
-      byt = '\n';
-    }
+		byt = '\n';
+	}
 
-  return byt;
+	return byt;
 }
 
 
@@ -177,11 +177,11 @@ void
 scbr (void)
 {
 
-  /* 
-   * Set up to use the direct console input call which may
-   * read from the keypad;
-   */
-  getchfn = ansiterm_getch;
+	/*
+	 * Set up to use the direct console input call which may
+	 * read from the keypad;
+	 */
+	getchfn = ansiterm_getch;
 }
 
 
@@ -195,10 +195,10 @@ void
 sncbr (void)
 {
 
-  /* 
-   * Set up to use the direct console input call with echo, getche()
-   */
-  getchfn = ansiterm_getche;
+	/*
+	 * Set up to use the direct console input call with echo, getche()
+	 */
+	getchfn = ansiterm_getche;
 }
 
 
@@ -209,16 +209,16 @@ sncbr (void)
 void
 newgame (void)
 {
-  long *p, *pe;
+	long *p, *pe;
 
-  for (p = cdesc, pe = cdesc + 100; p < pe; p++)
-    *p = 0;
+	for (p = cdesc, pe = cdesc + 100; p < pe; p++)
+		*p = 0;
 
-  time (&initialtime);
+	time (&initialtime);
 
-  srand ((int) initialtime);
+	srand ((int) initialtime);
 
-  lcreat ((char *) 0);		/* open buffering for output to terminal */
+	lcreat ((char *) 0);		/* open buffering for output to terminal */
 }
 
 
@@ -232,28 +232,28 @@ newgame (void)
 *      and any needed arguments following it
 *  Note: lprintf() only supports %s, %c and %d, with width modifier and left
 *      or right justification.
-*  No correct checking for output buffer overflow is done, but flushes 
+*  No correct checking for output buffer overflow is done, but flushes
 *      are done beforehand if needed.
 *  Returns nothing of value.
 */
 void
 lprintf (const char *fmt, ...)
 {
-  va_list vl;
-  char buffer[STRING_BUFFER_SIZE];
-  const char *p;
+	va_list vl;
+	char buffer[STRING_BUFFER_SIZE];
+	const char *p;
 
-  va_start (vl, fmt);
-  vsprintf (buffer, fmt, vl);
-  va_end (vl);
+	va_start (vl, fmt);
+	vsprintf (buffer, fmt, vl);
+	va_end (vl);
 
-  p = buffer;
+	p = buffer;
 
-  while (*p != '\0')
-    {
-      lprc (*p);
-      ++p;
-    }
+	while (*p != '\0')
+	{
+		lprc (*p);
+		++p;
+	}
 }
 
 
@@ -278,34 +278,34 @@ void
 lprint (int x)
 {
 
-  if (lpnt >= lpend)
-    {
+	if (lpnt >= lpend)
+	{
 
-      lflush ();
-    }
+		lflush ();
+	}
 
-  *lpnt++ = 255 & x;
-  *lpnt++ = 255 & (x >> 8);
-  *lpnt++ = 255 & (x >> 16);
-  *lpnt++ = 255 & (x >> 24);
+	*lpnt++ = 255 & x;
+	*lpnt++ = 255 & (x >> 8);
+	*lpnt++ = 255 & (x >> 16);
+	*lpnt++ = 255 & (x >> 24);
 }
 
 
 
-/* 
-* output one byte to the output buffer 
+/*
+* output one byte to the output buffer
 */
 void
 lprc (char ch)
 {
 
-  *lpnt++ = ch;
+	*lpnt++ = ch;
 
-  if (lpnt >= lpend)
-    {
+	if (lpnt >= lpend)
+	{
 
-      lflush ();
-    }
+		lflush ();
+	}
 }
 
 
@@ -318,39 +318,39 @@ lprc (char ch)
 *  lwrite(buf,len)         write a buffer to the output buffer
 *      char *buf;
 *      int len;
-*  
+*
 *  Enter with the address and number of bytes to write out
 *  Returns nothing of value
 */
 void
 lwrite (char *buf, int len)
 {
-  char *str;
-  int num2;
+	char *str;
+	int num2;
 
-  if (len > 399)		/* don't copy data if can just write it */
-    {
+	if (len > 399)		/* don't copy data if can just write it */
+	{
 #ifdef EXTRA
-      cdesc[BYTESOUT] += len;
+		cdesc[BYTESOUT] += len;
 #endif
 
-      for (str = buf; len > 0; --len)
-	lprc (*str++);
-    }
-  else
-    while (len)
-      {
-	if (lpnt >= lpend)
-	  lflush ();		/* if buffer is full flush it   */
-	num2 = lpbuf + BUFBIG - lpnt;	/*  # bytes left in output buffer   */
-	if (num2 > len)
-	  num2 = len;
-	str = lpnt;
-	len -= num2;
-	while (num2--)
-	  *str++ = *buf++;	/* copy in the bytes */
-	lpnt = str;
-      }
+		for (str = buf; len > 0; --len)
+			lprc (*str++);
+	}
+	else
+		while (len)
+		{
+			if (lpnt >= lpend)
+				lflush ();		/* if buffer is full flush it   */
+			num2 = lpbuf + BUFBIG - lpnt;	/*  # bytes left in output buffer   */
+			if (num2 > len)
+				num2 = len;
+			str = lpnt;
+			len -= num2;
+			while (num2--)
+				*str++ = *buf++;	/* copy in the bytes */
+			lpnt = str;
+		}
 }
 
 
@@ -362,22 +362,22 @@ lwrite (char *buf, int len)
 char
 lgetc (void)
 {
-  int i;
+	int i;
 
-  if (ipoint != iepoint)
-    return (inbuffer[ipoint++]);
-  if (iepoint != MAXIBUF)
-    return (0);
-  if ((i = _read (fd, inbuffer, MAXIBUF)) <= 0)
-    {
-      if (i != 0)
-	fprintf (stderr, "error reading from input file\n");
-      iepoint = ipoint = 0;
-      return (0);
-    }
-  ipoint = 1;
-  iepoint = i;
-  return (*inbuffer);
+	if (ipoint != iepoint)
+		return (inbuffer[ipoint++]);
+	if (iepoint != MAXIBUF)
+		return (0);
+	if ((i = _read (fd, inbuffer, MAXIBUF)) <= 0)
+	{
+		if (i != 0)
+			fprintf (stderr, "error reading from input file\n");
+		iepoint = ipoint = 0;
+		return (0);
+	}
+	ipoint = 1;
+	iepoint = i;
+	return (*inbuffer);
 }
 
 
@@ -397,12 +397,12 @@ lgetc (void)
 int
 larint (void)
 {
-  int i;
-  i = 255 & lgetc ();
-  i |= (255 & lgetc ()) << 8;
-  i |= (255 & lgetc ()) << 16;
-  i |= (255 & lgetc ()) << 24;
-  return (i);
+	int i;
+	i = 255 & lgetc ();
+	i |= (255 & lgetc ()) << 8;
+	i |= (255 & lgetc ()) << 16;
+	i |= (255 & lgetc ()) << 24;
+	return (i);
 }
 
 
@@ -418,37 +418,37 @@ larint (void)
 void
 lrfill (char *adr, int num)
 {
-  char *pnt;
-  int num2;
+	char *pnt;
+	int num2;
 
-  while (num)
-    {
-      if (iepoint == ipoint)
+	while (num)
 	{
-	  if (num > 5)		/* fast way */
-	    {
-	      if (_read (fd, adr, num) != num)
-		fprintf (stderr, "error reading from input file\n");
-	      num = 0;
-	    }
-	  else
-	    {
-	      *adr++ = lgetc ();
-	      --num;
-	    }
+		if (iepoint == ipoint)
+		{
+			if (num > 5)		/* fast way */
+			{
+				if (_read (fd, adr, num) != num)
+					fprintf (stderr, "error reading from input file\n");
+				num = 0;
+			}
+			else
+			{
+				*adr++ = lgetc ();
+				--num;
+			}
+		}
+		else
+		{
+			num2 = iepoint - ipoint;	/*  # of bytes left in the buffer   */
+			if (num2 > num)
+				num2 = num;
+			pnt = inbuffer + ipoint;
+			num -= num2;
+			ipoint += num2;
+			while (num2--)
+				*adr++ = *pnt++;
+		}
 	}
-      else
-	{
-	  num2 = iepoint - ipoint;	/*  # of bytes left in the buffer   */
-	  if (num2 > num)
-	    num2 = num;
-	  pnt = inbuffer + ipoint;
-	  num -= num2;
-	  ipoint += num2;
-	  while (num2--)
-	    *adr++ = *pnt++;
-	}
-    }
 }
 
 
@@ -461,27 +461,27 @@ lrfill (char *adr, int num)
 char *
 lgetw (void)
 {
-  char *lgp, cc;
-  int n = LINBUFSIZE, quote = 0;
+	char *lgp, cc;
+	int n = LINBUFSIZE, quote = 0;
 
-  lgp = lgetwbuf;
-  do
-    cc = lgetc ();
-  while ((cc <= 32) && (cc > '\0'));	/* eat whitespace */
-  for (;; --n, cc = lgetc ())
-    {
-      if ((cc == '\0') && (lgp == lgetwbuf))
-	return (NULL);		/* EOF */
-      if ((n <= 1) || ((cc <= 32) && (quote == 0)))
+	lgp = lgetwbuf;
+	do
+		cc = lgetc ();
+	while ((cc <= 32) && (cc > '\0'));	/* eat whitespace */
+	for (;; --n, cc = lgetc ())
 	{
-	  *lgp = '\0';
-	  return lgetwbuf;
+		if ((cc == '\0') && (lgp == lgetwbuf))
+			return (NULL);		/* EOF */
+		if ((n <= 1) || ((cc <= 32) && (quote == 0)))
+		{
+			*lgp = '\0';
+			return lgetwbuf;
+		}
+		if (cc != '"')
+			*lgp++ = cc;
+		else
+			quote ^= 1;
 	}
-      if (cc != '"')
-	*lgp++ = cc;
-      else
-	quote ^= 1;
-    }
 }
 
 
@@ -494,23 +494,23 @@ lgetw (void)
 char *
 lgetl (void)
 {
-  int i = LINBUFSIZE;
-  char ch;
-  char *str = lgetwbuf;
+	int i = LINBUFSIZE;
+	char ch;
+	char *str = lgetwbuf;
 
-  for (;; --i)
-    {
-      *str++ = ch = lgetc ();
-      if (ch == 0)
+	for (;; --i)
 	{
-	  if (str == lgetwbuf + 1)
-	    return (NULL);	/* EOF */
-	ot:*str = 0;
-	  return (lgetwbuf);	/* line ended by EOF */
+		*str++ = ch = lgetc ();
+		if (ch == 0)
+		{
+			if (str == lgetwbuf + 1)
+				return (NULL);	/* EOF */
+ot: *str = 0;
+			return (lgetwbuf);	/* line ended by EOF */
+		}
+		if ((ch == '\n') || (i <= 1))
+			goto ot;		/* line ended by \n */
 	}
-      if ((ch == '\n') || (i <= 1))
-	goto ot;		/* line ended by \n */
-    }
 }
 
 /* Just for the record, I removed all those _setmodes for *nix
@@ -529,21 +529,21 @@ lgetl (void)
 int
 lcreat (char *str)
 {
-  lpnt = lpbuf;
-  lpend = lpbuf + BUFBIG;
-  if (str == NULL)
-    return (lfd = 1);
-  if ((lfd = _creat (str, _S_IWRITE)) < 0)
-    {
-      lfd = 1;
-      lprintf ("error creating file <%s>\n", str);
-      lflush ();
-      return (-1);
-    }
+	lpnt = lpbuf;
+	lpend = lpbuf + BUFBIG;
+	if (str == NULL)
+		return (lfd = 1);
+	if ((lfd = _creat (str, _S_IWRITE)) < 0)
+	{
+		lfd = 1;
+		lprintf ("error creating file <%s>\n", str);
+		lflush ();
+		return (-1);
+	}
 #if defined WINDOWS
-  _setmode (lfd, O_BINARY);
+	_setmode (lfd, O_BINARY);
 #endif
-  return lfd;
+	return lfd;
 }
 
 
@@ -558,22 +558,22 @@ lcreat (char *str)
 int
 lopen (char *str)
 {
-  ipoint = iepoint = MAXIBUF;
+	ipoint = iepoint = MAXIBUF;
 
-  if (str == NULL)
-    return (fd = 0);
+	if (str == NULL)
+		return (fd = 0);
 
-  if ((fd = _open (str, 0)) < 0)
-    {
-      lwclose ();
-      lfd = 1;
-      lpnt = lpbuf;
-      return (-1);
-    }
+	if ((fd = _open (str, 0)) < 0)
+	{
+		lwclose ();
+		lfd = 1;
+		lpnt = lpbuf;
+		return (-1);
+	}
 #if defined WINDOWS
-  _setmode (fd, O_BINARY);
+	_setmode (fd, O_BINARY);
 #endif
-  return fd;
+	return fd;
 }
 
 
@@ -588,20 +588,20 @@ lopen (char *str)
 int
 lappend (char *str)
 {
-  lpnt = lpbuf;
-  lpend = lpbuf + BUFBIG;
-  if (str == NULL)
-    return (lfd = 1);
-  if ((lfd = _open (str, 2)) < 0)
-    {
-      lfd = 1;
-      return (-1);
-    }
+	lpnt = lpbuf;
+	lpend = lpbuf + BUFBIG;
+	if (str == NULL)
+		return (lfd = 1);
+	if ((lfd = _open (str, 2)) < 0)
+	{
+		lfd = 1;
+		return (-1);
+	}
 #if defined WINDOWS
-  _setmode (lfd, O_BINARY);
+	_setmode (lfd, O_BINARY);
 #endif
-  _lseek (lfd, 0L, 2);		/* seek to end of file */
-  return lfd;
+	_lseek (lfd, 0L, 2);		/* seek to end of file */
+	return lfd;
 }
 
 
@@ -615,11 +615,11 @@ void
 lrclose (void)
 {
 
-  if (fd > 0)
-    {
+	if (fd > 0)
+	{
 
-      _close (fd);
-    }
+		_close (fd);
+	}
 }
 
 
@@ -632,13 +632,13 @@ lrclose (void)
 void
 lwclose (void)
 {
-  lflush ();
+	lflush ();
 
-  if (lfd > 2)
-    {
+	if (lfd > 2)
+	{
 
-      _close (lfd);
-    }
+		_close (lfd);
+	}
 }
 
 
@@ -650,20 +650,20 @@ lwclose (void)
 void
 lprcat (char *str)
 {
-  char *str2;
+	char *str2;
 
-  if (lpnt >= lpend)
-    {
+	if (lpnt >= lpend)
+	{
 
-      lflush ();
-    }
+		lflush ();
+	}
 
-  str2 = lpnt;
+	str2 = lpnt;
 
-  while ((*str2++ = *str++) != '\0')
-    ;
+	while ((*str2++ = *str++) != '\0')
+		;
 
-  lpnt = str2 - 1;
+	lpnt = str2 - 1;
 }
 
 
@@ -675,15 +675,15 @@ void
 cursor (int x, int y)
 {
 
-  if (lpnt >= lpend)
-    {
+	if (lpnt >= lpend)
+	{
 
-      lflush ();
-    }
+		lflush ();
+	}
 
-  *lpnt++ = CURSOR;
-  *lpnt++ = (char) x;
-  *lpnt++ = (char) y;
+	*lpnt++ = CURSOR;
+	*lpnt++ = (char) x;
+	*lpnt++ = (char) y;
 }
 
 
@@ -695,7 +695,7 @@ void
 cursors (void)
 {
 
-  cursor (1, 24);
+	cursor (1, 24);
 }
 
 
@@ -726,7 +726,7 @@ static const char CL[] = { 27, '[', ';', 'H', 27, '[', '2', 'J', 0 };
 
 /* cursor motion */
 static const char CM[] =
-  { 27, '[', '%', 'i', '%', '2', ';', '%', '2', 'H', 0 };
+{ 27, '[', '%', 'i', '%', '2', ';', '%', '2', 'H', 0 };
 
 /* insert line */
 static const char AL[] = { 27, '[', 'L', 0 };
@@ -754,19 +754,19 @@ void
 init_term (void)
 {
 
-  /* get memory for decoded output buffer */
-  outbuf = malloc (BUFBIG + 16);
+	/* get memory for decoded output buffer */
+	outbuf = malloc (BUFBIG + 16);
 
-  if (outbuf == NULL)
-    {
+	if (outbuf == NULL)
+	{
 
-      fprintf (stderr, "Error malloc'ing memory for decoded output buffer\n");
+		fprintf (stderr, "Error malloc'ing memory for decoded output buffer\n");
 
-      /* malloc() failure */
-      died (-285);
-    }
+		/* malloc() failure */
+		died (-285);
+	}
 
-  ansiterm_init ();
+	ansiterm_init ();
 }
 
 
@@ -777,11 +777,11 @@ void
 cl_line (int x, int y)
 {
 
-  cursor (1, y);
+	cursor (1, y);
 
-  *lpnt++ = CL_LINE;
+	*lpnt++ = CL_LINE;
 
-  cursor (x, y);
+	cursor (x, y);
 }
 
 
@@ -792,18 +792,18 @@ cl_line (int x, int y)
 void
 cl_up (int x, int y)
 {
-  int i;
+	int i;
 
-  cursor (1, 1);
+	cursor (1, 1);
 
-  for (i = 1; i <= y; i++)
-    {
+	for (i = 1; i <= y; i++)
+	{
 
-      *lpnt++ = CL_LINE;
-      *lpnt++ = '\n';
-    }
+		*lpnt++ = CL_LINE;
+		*lpnt++ = '\n';
+	}
 
-  cursor (x, y);
+	cursor (x, y);
 }
 
 
@@ -815,34 +815,34 @@ cl_up (int x, int y)
 void
 cl_dn (int x, int y)
 {
-  int i;
+	int i;
 
-  cursor (1, y);
+	cursor (1, y);
 
-  if (CD == NULL)
-    {
-
-      *lpnt++ = CL_LINE;
-
-      for (i = y; i <= 24; i++)
+	if (CD == NULL)
 	{
 
-	  *lpnt++ = CL_LINE;
+		*lpnt++ = CL_LINE;
 
-	  if (i != 24)
-	    *lpnt++ = '\n';
+		for (i = y; i <= 24; i++)
+		{
+
+			*lpnt++ = CL_LINE;
+
+			if (i != 24)
+				*lpnt++ = '\n';
+		}
+
+		cursor (x, y);
+
+	}
+	else
+	{
+
+		*lpnt++ = CL_DOWN;
 	}
 
-      cursor (x, y);
-
-    }
-  else
-    {
-
-      *lpnt++ = CL_DOWN;
-    }
-
-  cursor (x, y);
+	cursor (x, y);
 }
 
 
@@ -854,15 +854,15 @@ void
 lstandout (char *str)
 {
 
-  *lpnt++ = ST_START;
+	*lpnt++ = ST_START;
 
-  while (*str)
-    {
+	while (*str)
+	{
 
-      *lpnt++ = *str++;
-    }
+		*lpnt++ = *str++;
+	}
 
-  *lpnt++ = ST_END;
+	*lpnt++ = ST_END;
 }
 
 
@@ -875,7 +875,7 @@ void
 set_score_output (void)
 {
 
-  enable_scroll = -1;
+	enable_scroll = -1;
 }
 
 
@@ -893,109 +893,109 @@ static int scrline = 18;	/* line # for wraparound instead of scrolling if no DL 
 void
 lflush (void)
 {
-  int lpoint;
-  char *str;
-  static int curx = 0;
-  static int cury = 0;
+	int lpoint;
+	char *str;
+	static int curx = 0;
+	static int cury = 0;
 
-  if ((lpoint = lpnt - lpbuf) > 0)
-    {
+	if ((lpoint = lpnt - lpbuf) > 0)
+	{
 #ifdef EXTRA
-      cdesc[BYTESOUT] += lpoint;
+		cdesc[BYTESOUT] += lpoint;
 #endif
-      if (enable_scroll <= -1)
-	{
-	  flush_buf ();
+		if (enable_scroll <= -1)
+		{
+			flush_buf ();
 
-	  /* Catch write errors on save files
-	   */
-	  if (_write (lfd, lpbuf, lpoint) != lpoint)
-	    {
-	      warn ("Error writing output file\n");
-	    }
+			/* Catch write errors on save files
+			 */
+			if (_write (lfd, lpbuf, lpoint) != lpoint)
+			{
+				warn ("Error writing output file\n");
+			}
 
 
-	  lpnt = lpbuf;		/* point back to beginning of buffer */
-	  return;
+			lpnt = lpbuf;		/* point back to beginning of buffer */
+			return;
+		}
+		for (str = lpbuf; str < lpnt; str++)
+		{
+			if (*str >= 32)
+			{
+				ttputch (*str);
+				curx++;
+			}
+			else
+				switch (*str)
+				{
+				case CLEAR:
+					tputs (CL);
+					curx = cury = 0;
+					break;
+
+				case CL_LINE:
+					tputs (CE);
+					break;
+
+				case CL_DOWN:
+					tputs (CD);
+					break;
+
+				case ST_START:
+					tputs (SO);
+					break;
+
+				case ST_END:
+					tputs (SE);
+					break;
+
+				case CURSOR:
+					curx = *++str - 1;
+					cury = *++str - 1;
+					tputs (atgoto (CM, curx, cury));
+					break;
+
+				case '\n':
+					if ((cury == 23) && enable_scroll)
+					{
+
+						if (++scrline > 23)
+						{
+
+							scrline = 19;
+						}
+
+						tputs (atgoto (CM, 0, scrline + 1));
+						tputs (CE);
+
+						tputs (atgoto (CM, 0, scrline));
+						tputs (CE);
+
+					}
+					else
+					{
+
+						ttputch ('\n');
+						cury++;
+					}
+
+					curx = 0;
+					break;
+
+				case T_INIT:
+					tputs (TI);
+					break;
+				case T_END:
+					tputs (TE);
+					break;
+				default:
+					ttputch (*str);
+					curx++;
+				}
+		}
 	}
-      for (str = lpbuf; str < lpnt; str++)
-	{
-	  if (*str >= 32)
-	    {
-	      ttputch (*str);
-	      curx++;
-	    }
-	  else
-	    switch (*str)
-	      {
-	      case CLEAR:
-		tputs (CL);
-		curx = cury = 0;
-		break;
-
-	      case CL_LINE:
-		tputs (CE);
-		break;
-
-	      case CL_DOWN:
-		tputs (CD);
-		break;
-
-	      case ST_START:
-		tputs (SO);
-		break;
-
-	      case ST_END:
-		tputs (SE);
-		break;
-
-	      case CURSOR:
-		curx = *++str - 1;
-		cury = *++str - 1;
-		tputs (atgoto (CM, curx, cury));
-		break;
-
-	      case '\n':
-		if ((cury == 23) && enable_scroll)
-		  {
-
-		    if (++scrline > 23)
-		      {
-
-			scrline = 19;
-		      }
-
-		    tputs (atgoto (CM, 0, scrline + 1));
-		    tputs (CE);
-
-		    tputs (atgoto (CM, 0, scrline));
-		    tputs (CE);
-
-		  }
-		else
-		  {
-
-		    ttputch ('\n');
-		    cury++;
-		  }
-
-		curx = 0;
-		break;
-
-	      case T_INIT:
-		tputs (TI);
-		break;
-	      case T_END:
-		tputs (TE);
-		break;
-	      default:
-		ttputch (*str);
-		curx++;
-	      }
-	}
-    }
-  lpnt = lpbuf;
-  flush_buf ();			/* flush real output buffer now */
+	lpnt = lpbuf;
+	flush_buf ();			/* flush real output buffer now */
 }
 
 
@@ -1009,13 +1009,13 @@ static void
 ttputch (int c)
 {
 
-  outbuf[index++] = (char) c;
+	outbuf[index++] = (char) c;
 
-  if (index >= BUFBIG)
-    {
+	if (index >= BUFBIG)
+	{
 
-      flush_buf ();
-    }
+		flush_buf ();
+	}
 }
 
 
@@ -1027,13 +1027,13 @@ ttputch (int c)
 static void
 tputs (const char *cp)
 {
-  if (cp == NULL)
-    {
-    }
-  while (*cp != '\0')
-    {
-      ttputch (*cp++);
-    }
+	if (cp == NULL)
+	{
+	}
+	while (*cp != '\0')
+	{
+		ttputch (*cp++);
+	}
 }
 
 
@@ -1043,33 +1043,33 @@ tputs (const char *cp)
 static void
 flush_buf (void)
 {
-  if (index)
-    {
-
-      if (lfd == 1)
+	if (index)
 	{
 
-	  ansiterm_out (outbuf, index);
+		if (lfd == 1)
+		{
 
+			ansiterm_out (outbuf, index);
+
+		}
+		else
+		{
+
+			_write (lfd, outbuf, index);
+		}
 	}
-      else
-	{
 
-	  _write (lfd, outbuf, index);
-	}
-    }
-
-  index = 0;
+	index = 0;
 }
 
 
 /*
 *  flushall()  Function to flush all type-ahead in the input buffer
-*  
+*
 *  I've fixed this mess.  I don't know who implemented this
 *  but kbhit is Windows only.  I'm guessing they never
 *  used a BSD or GNU/Linux system or never read a manpage.
-*  
+*
 *  I prefer declaring each individually as it is safer
 *  and also prevent them from being compiled
 *  when not used by the systems defs.
@@ -1083,10 +1083,10 @@ flush_buf (void)
 void
 lflushall (void)
 {
-  while (kbhit())
-    {
-      getch();
-    }
+	while (kbhit())
+	{
+		getch();
+	}
 }
 #endif
 
@@ -1094,61 +1094,61 @@ lflushall (void)
 /*
 *  char *tmcapcnv(sd,ss)  Routine to convert VT100 escapes to termcap format
 *
-*  Processes only the \33[#m sequence (converts . files for termcap use 
+*  Processes only the \33[#m sequence (converts . files for termcap use
 */
 char *
 tmcapcnv (char *sd, char *ss)
 {
-  int tmstate = 0;		/* 0=normal, 1=\33 2=[ 3=# */
-  char tmdigit = 0;		/* the # in \33[#m */
+	int tmstate = 0;		/* 0=normal, 1=\33 2=[ 3=# */
+	char tmdigit = 0;		/* the # in \33[#m */
 
-  while (*ss)
-    {
-      switch (tmstate)
+	while (*ss)
 	{
-	case 0:
-	  if (*ss == '\33')
-	    {
-	      tmstate++;
-	      break;
-	    }
-	ign:*sd++ = *ss;
-	ign2:tmstate = 0;
-	  break;
-	case 1:
-	  if (*ss != '[')
-	    goto ign;
-	  tmstate++;
-	  break;
-	case 2:
-	  if (isdigit (*ss))
-	    {
-	      tmdigit = *ss - '0';
-	      tmstate++;
-	      break;
-	    }
-	  if (*ss == 'm')
-	    {
-	      *sd++ = ST_END;
-	      goto ign2;
-	    }
-	  goto ign;
-	case 3:
-	  if (*ss == 'm')
-	    {
-	      if (tmdigit)
-		*sd++ = ST_START;
-	      else
-		*sd++ = ST_END;
-	      goto ign2;
-	    }
-	default:
-	  goto ign;
-	};
-      ss++;
-    }
-  *sd = 0;			/* NULL terminator */
-  return (sd);
+		switch (tmstate)
+		{
+		case 0:
+			if (*ss == '\33')
+			{
+				tmstate++;
+				break;
+			}
+ign: *sd++ = *ss;
+ign2: tmstate = 0;
+			break;
+		case 1:
+			if (*ss != '[')
+				goto ign;
+			tmstate++;
+			break;
+		case 2:
+			if (isdigit (*ss))
+			{
+				tmdigit = *ss - '0';
+				tmstate++;
+				break;
+			}
+			if (*ss == 'm')
+			{
+				*sd++ = ST_END;
+				goto ign2;
+			}
+			goto ign;
+		case 3:
+			if (*ss == 'm')
+			{
+				if (tmdigit)
+					*sd++ = ST_START;
+				else
+					*sd++ = ST_END;
+				goto ign2;
+			}
+		default:
+			goto ign;
+		};
+		ss++;
+	}
+	*sd = 0;			/* NULL terminator */
+	return (sd);
 }
 
 
@@ -1157,7 +1157,7 @@ static void
 warn (char *msg)
 {
 
-  fprintf (stderr, "%s", msg);
+	fprintf (stderr, "%s", msg);
 }
 
 
@@ -1165,67 +1165,67 @@ warn (char *msg)
 void
 enter_name (void)
 {
-  int i;
+	int i;
 
-  lprcat ("\n\nEnter character name:\n");
+	lprcat ("\n\nEnter character name:\n");
 
-  sncbr ();
+	sncbr ();
 
-  i = 0;
+	i = 0;
 
-  do
-    {
-      char c;
-
-      c = ttgetch ();
-
-      if (c == '\n')
-	break;
-      if (c == 8)
+	do
 	{
-	  if (i > 0)
-	    {
-	      --i;
-	      ansiterm_delch ();
-	    }
+		char c;
+
+		c = ttgetch ();
+
+		if (c == '\n')
+			break;
+		if (c == 8)
+		{
+			if (i > 0)
+			{
+				--i;
+				ansiterm_delch ();
+			}
+		}
+		else if (isprint (c))
+		{
+			logname[i] = c;
+			++i;
+		}
+
 	}
-      else if (isprint (c))
-	{
-	  logname[i] = c;
-	  ++i;
-	}
+	while (i < LOGNAMESIZE - 1);
 
-    }
-  while (i < LOGNAMESIZE - 1);
+	logname[i] = '\0';
 
-  logname[i] = '\0';
-
-  scbr ();
+	scbr ();
 }
 
 
 void
 select_sex (void)
 {
-  int c;
+	int c;
 
-  lprcat ("\n\nSelect character sex (0=female,1=male):\n");
+	lprcat ("\n\nSelect character sex (0=female,1=male):\n");
 
-  sncbr ();
+	sncbr ();
 
-  c = ttgetch ();
+	c = ttgetch ();
 
-  if (c == '0')
-    {
+	if (c == '0')
+	{
 
-      sex = 0;
+		sex = 0;
 
-    }
-  else
-    {
+	}
+	else
+	{
 
-      sex = 1;
-    }
+		sex = 1;
+	}
 
-  scbr ();
+	scbr ();
 }

@@ -32,68 +32,68 @@ int move_no_pickup = FALSE;
 int
 yylex (void)
 {
-  char cc;
-  char firsttime = TRUE;
+	char cc;
+	char firsttime = TRUE;
 
-  if (hit2flag)
-    {
-      hit2flag = 0;
-      yrepcount = 0;
-      return (' ');
-    }
-  if (yrepcount > 0)
-    {
-      --yrepcount;
-      return (lastok);
-    }
-  else
-    yrepcount = 0;
-  if (yrepcount == 0)
-    {
-      bottomdo ();
-      showplayer ();		/* show where the player is */
-      move_no_pickup = FALSE;	/* clear 'm' flag */
-    }
-
-  lflush ();
-  for (;;)
-    {
-      cdesc[BYTESIN]++;
-
-      cc = ttgetch ();
-
-      /* get repeat count, showing to player
-       */
-      if ((cc <= '9') && (cc >= '0'))
+	if (hit2flag)
 	{
-	  yrepcount = yrepcount * 10 + cc - '0';
-
-	  /* show count to player for feedback
-	   */
-	  if (yrepcount >= 10)
-	    {
-	      cursors ();
-	      if (firsttime)
-		lprcat ("\n");
-	      lprintf ("count: %d", (int) yrepcount);
-	      firsttime = FALSE;
-	      lflush ();	/* show count */
-	    }
+		hit2flag = 0;
+		yrepcount = 0;
+		return (' ');
 	}
-      else
+	if (yrepcount > 0)
 	{
-	  /* check for multi-character commands and handle.
-	   */
-	  if (cc == 'm')
-	    {
-	      move_no_pickup = TRUE;
-	      cc = ttgetch ();
-	    }
-	  if (yrepcount > 0)
-	    --yrepcount;
-	  return (lastok = cc);
+		--yrepcount;
+		return (lastok);
 	}
-    }
+	else
+		yrepcount = 0;
+	if (yrepcount == 0)
+	{
+		bottomdo ();
+		showplayer ();		/* show where the player is */
+		move_no_pickup = FALSE;	/* clear 'm' flag */
+	}
+
+	lflush ();
+	for (;;)
+	{
+		cdesc[BYTESIN]++;
+
+		cc = ttgetch ();
+
+		/* get repeat count, showing to player
+		 */
+		if ((cc <= '9') && (cc >= '0'))
+		{
+			yrepcount = yrepcount * 10 + cc - '0';
+
+			/* show count to player for feedback
+			 */
+			if (yrepcount >= 10)
+			{
+				cursors ();
+				if (firsttime)
+					lprcat ("\n");
+				lprintf ("count: %d", (int) yrepcount);
+				firsttime = FALSE;
+				lflush ();	/* show count */
+			}
+		}
+		else
+		{
+			/* check for multi-character commands and handle.
+			 */
+			if (cc == 'm')
+			{
+				move_no_pickup = TRUE;
+				cc = ttgetch ();
+			}
+			if (yrepcount > 0)
+				--yrepcount;
+			return (lastok = cc);
+		}
+	}
 }
 
 
@@ -107,57 +107,57 @@ enter with hard= -1 for default hardness, else any desired hardness
 void
 sethard (int hard)
 {
-  int j, k;
-  int i;
-  struct monst *mp;
+	int j, k;
+	int i;
+	struct monst *mp;
 
-  j = cdesc[HARDGAME];
-  hashewon ();
+	j = cdesc[HARDGAME];
+	hashewon ();
 
-  /* don't set cdesc[HARDGAME] if restoring game */
-  if (restorflag == 0)
-    {
-
-      if (hard >= 0)
+	/* don't set cdesc[HARDGAME] if restoring game */
+	if (restorflag == 0)
 	{
 
-	  cdesc[HARDGAME] = hard;
+		if (hard >= 0)
+		{
+
+			cdesc[HARDGAME] = hard;
+		}
+
+	}
+	else
+	{
+
+		/* set cdesc[HARDGAME] to proper value if restoring game */
+		cdesc[HARDGAME] = j;
 	}
 
-    }
-  else
-    {
+	k = cdesc[HARDGAME];
 
-      /* set cdesc[HARDGAME] to proper value if restoring game */
-      cdesc[HARDGAME] = j;
-    }
+	if (k == 0)
+	{
 
-  k = cdesc[HARDGAME];
+		return;
+	}
 
-  if (k == 0)
-    {
+	for (j = 0; j <= MAXMONST + 8; j++)
+	{
 
-      return;
-    }
+		mp = &monster[j];
 
-  for (j = 0; j <= MAXMONST + 8; j++)
-    {
+		i = ((6 + k) * mp->hitpoints + 1) / 6;
+		mp->hitpoints = (i < 0) ? 32767 : i;
 
-      mp = &monster[j];
+		i = ((6 + k) * mp->damage + 1) / 5;
+		mp->damage = (i > 127) ? 127 : i;
 
-      i = ((6 + k) * mp->hitpoints + 1) / 6;
-      mp->hitpoints = (i < 0) ? 32767 : i;
+		i = (10 * mp->gold) / (10 + k);
+		mp->gold = (i > 32767) ? 32767 : i;
 
-      i = ((6 + k) * mp->damage + 1) / 5;
-      mp->damage = (i > 127) ? 127 : i;
+		i = mp->armorclass - k;
+		mp->armorclass = (i < -127) ? -127 : i;
 
-      i = (10 * mp->gold) / (10 + k);
-      mp->gold = (i > 32767) ? 32767 : i;
-
-      i = mp->armorclass - k;
-      mp->armorclass = (i < -127) ? -127 : i;
-
-      i = (7 * mp->experience) / (7 + k) + 1;
-      mp->experience = (i <= 0) ? 1 : i;
-    }
+		i = (7 * mp->experience) / (7 + k) + 1;
+		mp->experience = (i <= 0) ? 1 : i;
+	}
 }

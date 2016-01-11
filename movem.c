@@ -113,54 +113,54 @@ movemonst (void)
 	smart_count = 0;
 	min_int = 10 - cdesc[HARDGAME];	/* minimum monster intelligence to move smart */
 	if (cdesc[AGGRAVATE] || !cdesc[STEALTH])
-		{
-			for (j = tmp1; j < tmp2; j++)
-	for (i = tmp3; i < tmp4; i++)
-		if (mitem[i][j])
-			{
-				movelist[movecnt].x = i;
-				movelist[movecnt].y = j;
-				if (monster[mitem[i][j]].intelligence > min_int)
-		{
-			movelist[movecnt].smart = TRUE;
-			smart_count++;
-		}
-				else
-		movelist[movecnt].smart = FALSE;
-				movecnt++;
-			}
-		}
+	{
+		for (j = tmp1; j < tmp2; j++)
+			for (i = tmp3; i < tmp4; i++)
+				if (mitem[i][j])
+				{
+					movelist[movecnt].x = i;
+					movelist[movecnt].y = j;
+					if (monster[mitem[i][j]].intelligence > min_int)
+					{
+						movelist[movecnt].smart = TRUE;
+						smart_count++;
+					}
+					else
+						movelist[movecnt].smart = FALSE;
+					movecnt++;
+				}
+	}
 	else
-		{
-			for (j = tmp1; j < tmp2; j++)
-	for (i = tmp3; i < tmp4; i++)
-		if (mitem[i][j] && stealth[i][j])	/* stealth[x][y] = 1 when AWAKE! */
-			{
-				movelist[movecnt].x = i;
-				movelist[movecnt].y = j;
-				if (monster[mitem[i][j]].intelligence > min_int)
-		{
-			movelist[movecnt].smart = TRUE;
-			smart_count++;
-		}
-				else
-		movelist[movecnt].smart = FALSE;
-				movecnt++;
-			}
-		}
+	{
+		for (j = tmp1; j < tmp2; j++)
+			for (i = tmp3; i < tmp4; i++)
+				if (mitem[i][j] && stealth[i][j])	/* stealth[x][y] = 1 when AWAKE! */
+				{
+					movelist[movecnt].x = i;
+					movelist[movecnt].y = j;
+					if (monster[mitem[i][j]].intelligence > min_int)
+					{
+						movelist[movecnt].smart = TRUE;
+						smart_count++;
+					}
+					else
+						movelist[movecnt].smart = FALSE;
+					movecnt++;
+				}
+	}
 
 	/* now move the monsters in the movelist.  If we have at least one
 		 smart monster, build a proximity ripple and use it for all smart
 		 monster movement.
 	 */
 	if (movecnt > 0)
-		{
-			if (cdesc[SCAREMONST])
-	for (i = 0; i < movecnt; i++)
-		move_scared (movelist[i].x, movelist[i].y);
-			else
 	{
-		if (smart_count > 0)
+		if (cdesc[SCAREMONST])
+			for (i = 0; i < movecnt; i++)
+				move_scared (movelist[i].x, movelist[i].y);
+		else
+		{
+			if (smart_count > 0)
 			{
 				/* I was going to put in code that prevented the rebuilding
 					 of the proximity ripple if the player had not moved since
@@ -170,68 +170,68 @@ movemonst (void)
 				 */
 				build_proximity_ripple ();
 				for (i = 0; i < movecnt; i++)
-		if (movelist[i].smart)
-			move_smart (movelist[i].x, movelist[i].y);
-		else
-			move_dumb (movelist[i].x, movelist[i].y);
+					if (movelist[i].smart)
+						move_smart (movelist[i].x, movelist[i].y);
+					else
+						move_dumb (movelist[i].x, movelist[i].y);
 			}
-		else
-			for (i = 0; i < movecnt; i++)
-				move_dumb (movelist[i].x, movelist[i].y);
-	}
+			else
+				for (i = 0; i < movecnt; i++)
+					move_dumb (movelist[i].x, movelist[i].y);
 		}
+	}
 
 	/* Also check for the last monster hit.  This is necessary to prevent
 		 the player from getting free hits on a monster with long range
 		 spells or when stealthed.
 	 */
 	if (cdesc[AGGRAVATE] || !cdesc[STEALTH])
-		{
-			/* If the last monster hit is within the move window, its already
-				 been moved.
-			 */
-			if (((lasthx < tmp3 || lasthx >= tmp4) ||
-		 (lasthy < tmp1 || lasthy >= tmp2)) && mitem[lasthx][lasthy])
 	{
-		if (cdesc[SCAREMONST])
-			move_scared (lasthx, lasthy);
-		else if (monster[mitem[lasthx][lasthy]].intelligence > min_int)
+		/* If the last monster hit is within the move window, its already
+			 been moved.
+		 */
+		if (((lasthx < tmp3 || lasthx >= tmp4) ||
+		        (lasthy < tmp1 || lasthy >= tmp2)) && mitem[lasthx][lasthy])
+		{
+			if (cdesc[SCAREMONST])
+				move_scared (lasthx, lasthy);
+			else if (monster[mitem[lasthx][lasthy]].intelligence > min_int)
 			{
 				if (smart_count == 0)
-		build_proximity_ripple ();
+					build_proximity_ripple ();
 				move_smart (lasthx, lasthy);
 			}
-		else
-			move_dumb (lasthx, lasthy);
-		lasthx = w1x[0];	/* make sure the monster gets moved again */
-		lasthy = w1y[0];
-	}
+			else
+				move_dumb (lasthx, lasthy);
+			lasthx = w1x[0];	/* make sure the monster gets moved again */
+			lasthy = w1y[0];
 		}
+	}
 	else
-		{
-			/* If the last monster hit is within the move window, and not
-				 asleep due to stealth, then it has already been moved.
-				 Otherwise (monster outside window, asleep due to stealth),
-				 move the monster and update the lasthit x,y position.
-			 */
-			if ((((lasthx < tmp3 || lasthx >= tmp4) ||
-			(lasthy < tmp1 || lasthy >= tmp2)) &&
-		 mitem[lasthx][lasthy]) || !stealth[lasthx][lasthy])
 	{
-		if (cdesc[SCAREMONST])
-			move_scared (lasthx, lasthy);
-		else if (monster[mitem[lasthx][lasthy]].intelligence > min_int)
+		/* If the last monster hit is within the move window, and not
+			 asleep due to stealth, then it has already been moved.
+			 Otherwise (monster outside window, asleep due to stealth),
+			 move the monster and update the lasthit x,y position.
+		 */
+		if ((((lasthx < tmp3 || lasthx >= tmp4) ||
+		        (lasthy < tmp1 || lasthy >= tmp2)) &&
+		        mitem[lasthx][lasthy]) || !stealth[lasthx][lasthy])
+		{
+			if (cdesc[SCAREMONST])
+				move_scared (lasthx, lasthy);
+			else if (monster[mitem[lasthx][lasthy]].intelligence > min_int)
 			{
 				if (smart_count == 0)
-		build_proximity_ripple ();
+					build_proximity_ripple ();
 				move_smart (lasthx, lasthy);
 			}
-		else
-			move_dumb (lasthx, lasthy);
-		lasthx = w1x[0];	/* make sure the monster gets moved again */
-		lasthy = w1y[0];
-	}
+			else
+				move_dumb (lasthx, lasthy);
+			lasthx = w1x[0];	/* make sure the monster gets moved again */
+			lasthy = w1y[0];
 		}
+	}
 }
 
 
@@ -306,29 +306,29 @@ build_proximity_ripple (void)
 	vxy (&xh, &yh);
 	for (k = yl; k <= yh; k++)
 		for (m = xl; m <= xh; m++)
-			{
-	switch (item[m][k])
 		{
-		case OWALL:
-		case OPIT:
-		case OTRAPARROW:
-		case ODARTRAP:
-		case OCLOSEDDOOR:
-		case OTRAPDOOR:
-		case OTELEPORTER:
-			screen[m][k] = 127;
-			break;
-		case OENTRANCE:
-			if (level == 1)
+			switch (item[m][k])
+			{
+			case OWALL:
+			case OPIT:
+			case OTRAPARROW:
+			case ODARTRAP:
+			case OCLOSEDDOOR:
+			case OTRAPDOOR:
+			case OTELEPORTER:
 				screen[m][k] = 127;
-			else
+				break;
+			case OENTRANCE:
+				if (level == 1)
+					screen[m][k] = 127;
+				else
+					screen[m][k] = 0;
+				break;
+			default:
 				screen[m][k] = 0;
-			break;
-		default:
-			screen[m][k] = 0;
-			break;
-		};
-			}
+				break;
+			};
+		}
 	screen[playerx][playery] = 1;
 
 	/* now perform proximity ripple from playerx,playery to monster */
@@ -341,26 +341,26 @@ build_proximity_ripple (void)
 
 	PUTQUEUE (playerx, playery, 1);
 	do
-		{
-			GETQUEUE (curx, cury, curdist);
-
-			/* test all spots around the current one being looked at.
-			 */
-			if ((curx >= xl && curx <= xh) && (cury >= yl && cury <= yh))
 	{
-		for (z = 1; z < 9; z++)
+		GETQUEUE (curx, cury, curdist);
+
+		/* test all spots around the current one being looked at.
+		 */
+		if ((curx >= xl && curx <= xh) && (cury >= yl && cury <= yh))
+		{
+			for (z = 1; z < 9; z++)
 			{
 				tmpx = curx + diroffx[z];
 				tmpy = cury + diroffy[z];
 				vxy (&tmpx, &tmpy);
 				if (screen[tmpx][tmpy] == 0)
-		{
-			screen[tmpx][tmpy] = curdist + 1;
-			PUTQUEUE (tmpx, tmpy, curdist + 1);
-		}
+				{
+					screen[tmpx][tmpy] = curdist + 1;
+					PUTQUEUE (tmpx, tmpy, curdist + 1);
+				}
 			}
-	}
 		}
+	}
 	while (!QUEUEEMPTY ());
 }
 
@@ -378,16 +378,16 @@ move_scared (int i, int j)
 		 done in the monster list build.
 	 */
 	switch (mitem[i][j])
-		{
-		case TROGLODYTE:
-		case HOBGOBLIN:
-		case METAMORPH:
-		case XVART:
-		case INVISIBLESTALKER:
-		case ICELIZARD:
-			if ((gtime & 1) == 1)
-	return;
-		};
+	{
+	case TROGLODYTE:
+	case HOBGOBLIN:
+	case METAMORPH:
+	case XVART:
+	case INVISIBLESTALKER:
+	case ICELIZARD:
+		if ((gtime & 1) == 1)
+			return;
+	};
 
 	if ((xl = i + rnd (3) - 2) < 0)
 		xl = 0;
@@ -401,8 +401,8 @@ move_scared (int i, int j)
 	if ((tmp = item[xl][yl]) != OWALL)
 		if (mitem[xl][yl] == 0)
 			if ((mitem[i][j] != VAMPIRE) || (tmp != OMIRROR))
-	if (tmp != OCLOSEDDOOR)
-		mmove (i, j, xl, yl);
+				if (tmp != OCLOSEDDOOR)
+					mmove (i, j, xl, yl);
 }
 
 
@@ -423,16 +423,16 @@ move_smart (int i, int j)
 		 done in the monster list build.
 	 */
 	switch (mitem[i][j])
-		{
-		case TROGLODYTE:
-		case HOBGOBLIN:
-		case METAMORPH:
-		case XVART:
-		case INVISIBLESTALKER:
-		case ICELIZARD:
-			if ((gtime & 1) == 1)
-	return;
-		};
+	{
+	case TROGLODYTE:
+	case HOBGOBLIN:
+	case METAMORPH:
+	case XVART:
+	case INVISIBLESTALKER:
+	case ICELIZARD:
+		if ((gtime & 1) == 1)
+			return;
+	};
 
 	/* find an adjoining location in the proximity ripple that is
 		 closer to the player (has a lower value) than the monster's
@@ -440,30 +440,30 @@ move_smart (int i, int j)
 	 */
 	if (mitem[i][j] != VAMPIRE)
 		for (z = 1; z < 9; z++)	/* go around in a circle */
-			{
-	x = i + diroffx[z];
-	y = j + diroffy[z];
-	if (screen[x][y] < screen[i][j])
-		if (!mitem[x][y])
-			{
-				mmove (i, j, w1x[0] = x, w1y[0] = y);
-				return;
-			}
-			}
+		{
+			x = i + diroffx[z];
+			y = j + diroffy[z];
+			if (screen[x][y] < screen[i][j])
+				if (!mitem[x][y])
+				{
+					mmove (i, j, w1x[0] = x, w1y[0] = y);
+					return;
+				}
+		}
 	else
 		/* prevent vampires from moving onto mirrors
 		 */
 		for (z = 1; z < 9; z++)	/* go around in a circle */
-			{
-	x = i + diroffx[z];
-	y = j + diroffy[z];
-	if ((screen[x][y] < screen[i][j]) && (item[x][y] != OMIRROR))
-		if (!mitem[x][y])
-			{
-				mmove (i, j, w1x[0] = x, w1y[0] = y);
-				return;
-			}
-			}
+		{
+			x = i + diroffx[z];
+			y = j + diroffy[z];
+			if ((screen[x][y] < screen[i][j]) && (item[x][y] != OMIRROR))
+				if (!mitem[x][y])
+				{
+					mmove (i, j, w1x[0] = x, w1y[0] = y);
+					return;
+				}
+		}
 
 }
 
@@ -486,16 +486,16 @@ move_dumb (int i, int j)
 		 done in the monster list build.
 	 */
 	switch (mitem[i][j])
-		{
-		case TROGLODYTE:
-		case HOBGOBLIN:
-		case METAMORPH:
-		case XVART:
-		case INVISIBLESTALKER:
-		case ICELIZARD:
-			if ((gtime & 1) == 1)
-	return;
-		};
+	{
+	case TROGLODYTE:
+	case HOBGOBLIN:
+	case METAMORPH:
+	case XVART:
+	case INVISIBLESTALKER:
+	case ICELIZARD:
+		if ((gtime & 1) == 1)
+			return;
+	};
 
 	/* dumb monsters move here */
 	/* set up range of spots to check.  instead of checking all points
@@ -535,41 +535,41 @@ move_dumb (int i, int j)
 	for (k = xl; k < xh; k++)
 		for (m = yl; m < yh; m++)
 			if (k == playerx && m == playery)
-	{
-		tmpd = 1;
-		tmpx = k;
-		tmpy = m;
-		break;		/* exitloop */
-	}
-			else if ((item[k][m] != OWALL) &&
-				 (item[k][m] != OCLOSEDDOOR) &&
-				 ((mitem[k][m] == 0) || ((k == i) && (m == j))) &&
-				 ((mitem[i][j] != VAMPIRE) || (item[k][m] != OMIRROR)))
-	{
-		tmp = (playerx - k) * (playerx - k) + (playery - m) * (playery - m);
-		if (tmp < tmpd)
 			{
-				tmpd = tmp;
+				tmpd = 1;
 				tmpx = k;
 				tmpy = m;
+				break;		/* exitloop */
+			}
+			else if ((item[k][m] != OWALL) &&
+			         (item[k][m] != OCLOSEDDOOR) &&
+			         ((mitem[k][m] == 0) || ((k == i) && (m == j))) &&
+			         ((mitem[i][j] != VAMPIRE) || (item[k][m] != OMIRROR)))
+			{
+				tmp = (playerx - k) * (playerx - k) + (playery - m) * (playery - m);
+				if (tmp < tmpd)
+				{
+					tmpd = tmp;
+					tmpx = k;
+					tmpy = m;
+				}			/* end if */
 			}			/* end if */
-	}			/* end if */
 
 	/* we have finished checking the spaces around the monster.  if
 		 any can be moved on and are closer to the player than the
 		 current location, move the monster.
 	 */
 	if ((tmpd < 10000) && ((tmpx != i) || (tmpy != j)))
-		{
-			mmove (i, j, tmpx, tmpy);
-			w1x[0] = tmpx;		/* for last monster hit */
-			w1y[0] = tmpy;
-		}
+	{
+		mmove (i, j, tmpx, tmpy);
+		w1x[0] = tmpx;		/* for last monster hit */
+		w1y[0] = tmpy;
+	}
 	else
-		{
-			w1x[0] = i;		/* for last monster hit */
-			w1y[0] = j;
-		}
+	{
+		w1x[0] = i;		/* for last monster hit */
+		w1y[0] = j;
+	}
 }				/* end move_dumb() */
 
 
@@ -591,124 +591,124 @@ mmove (int aa, int bb, int cc, int dd)
 
 	flag = 0;			/* set to 1 if monster hit by arrow trap */
 	if ((cc == playerx) && (dd == playery))
-		{
-			hitplayer (aa, bb);
-			return;
-		}
+	{
+		hitplayer (aa, bb);
+		return;
+	}
 	i = item[cc][dd];
 	if ((i == OPIT) || (i == OTRAPDOOR))
 		switch (mitem[aa][bb])
-			{
-			case BAT:
-			case EYE:
-			case SPIRITNAGA:
-			case PLATINUMDRAGON:
-			case WRAITH:
-			case VAMPIRE:
-			case SILVERDRAGON:
-			case POLTERGEIST:
-			case DEMONLORD:
-			case DEMONLORD + 1:
-			case DEMONLORD + 2:
-			case DEMONLORD + 3:
-			case DEMONLORD + 4:
-			case DEMONLORD + 5:
-			case DEMONLORD + 6:
-			case DEMONPRINCE:
-	break;
+		{
+		case BAT:
+		case EYE:
+		case SPIRITNAGA:
+		case PLATINUMDRAGON:
+		case WRAITH:
+		case VAMPIRE:
+		case SILVERDRAGON:
+		case POLTERGEIST:
+		case DEMONLORD:
+		case DEMONLORD + 1:
+		case DEMONLORD + 2:
+		case DEMONLORD + 3:
+		case DEMONLORD + 4:
+		case DEMONLORD + 5:
+		case DEMONLORD + 6:
+		case DEMONPRINCE:
+			break;
 
-			default:
-	mitem[aa][bb] = 0;	/* fell in a pit or trapdoor */
-			};
+		default:
+			mitem[aa][bb] = 0;	/* fell in a pit or trapdoor */
+		};
 	tmp = mitem[aa][bb];
 	mitem[cc][dd] = tmp;
 	if (i == OANNIHILATION)
-		{
-			if (tmp >= DEMONLORD + 3)	/* demons dispel spheres */
 	{
-		cursors ();
-		lprintf ("\nThe %s dispels the sphere!", monster[tmp].name);
-		rmsphere (cc, dd);	/* delete the sphere */
-	}
-			else
-	mitem[cc][dd] = i = tmp = 0;
+		if (tmp >= DEMONLORD + 3)	/* demons dispel spheres */
+		{
+			cursors ();
+			lprintf ("\nThe %s dispels the sphere!", monster[tmp].name);
+			rmsphere (cc, dd);	/* delete the sphere */
 		}
+		else
+			mitem[cc][dd] = i = tmp = 0;
+	}
 	stealth[cc][dd] = 1;
 	if ((hitp[cc][dd] = hitp[aa][bb]) < 0)
 		hitp[cc][dd] = 1;
 	mitem[aa][bb] = 0;
 	if (tmp == LEPRECHAUN)
 		switch (i)
-			{
-			case OGOLDPILE:
-			case OMAXGOLD:
-			case OKGOLD:
-			case ODGOLD:
-			case ODIAMOND:
-			case ORUBY:
-			case OEMERALD:
-			case OSAPPHIRE:
-	item[cc][dd] = 0;	/* leprechaun takes gold */
-			};
+		{
+		case OGOLDPILE:
+		case OMAXGOLD:
+		case OKGOLD:
+		case ODGOLD:
+		case ODIAMOND:
+		case ORUBY:
+		case OEMERALD:
+		case OSAPPHIRE:
+			item[cc][dd] = 0;	/* leprechaun takes gold */
+		};
 
 	if (tmp == TROLL)		/* if a troll regenerate him */
 		if ((gtime & 1) == 0)
 			if (monster[tmp].hitpoints > hitp[cc][dd])
-	hitp[cc][dd]++;
+				hitp[cc][dd]++;
 
 	if (i == OTRAPARROW)		/* arrow hits monster */
-		{
-			who = "An arrow";
-			if ((hitp[cc][dd] -= rnd (10) + level) <= 0)
 	{
-		mitem[cc][dd] = 0;
-		flag = 2;
-	}
-			else
-	flag = 1;
-		}
-	if (i == ODARTRAP)		/* dart hits monster */
+		who = "An arrow";
+		if ((hitp[cc][dd] -= rnd (10) + level) <= 0)
 		{
-			who = "A dart";
-			if ((hitp[cc][dd] -= rnd (6)) <= 0)
-	{
-		mitem[cc][dd] = 0;
-		flag = 2;
-	}
-			else
-	flag = 1;
-		}
-	if (i == OTELEPORTER)		/* monster hits teleport trap */
-		{
-			flag = 3;
-			fillmonst (mitem[cc][dd]);
 			mitem[cc][dd] = 0;
+			flag = 2;
 		}
+		else
+			flag = 1;
+	}
+	if (i == ODARTRAP)		/* dart hits monster */
+	{
+		who = "A dart";
+		if ((hitp[cc][dd] -= rnd (6)) <= 0)
+		{
+			mitem[cc][dd] = 0;
+			flag = 2;
+		}
+		else
+			flag = 1;
+	}
+	if (i == OTELEPORTER)		/* monster hits teleport trap */
+	{
+		flag = 3;
+		fillmonst (mitem[cc][dd]);
+		mitem[cc][dd] = 0;
+	}
 	if (cdesc[BLINDCOUNT])
 		return;			/* if blind don't show where monsters are   */
 	if (know[cc][dd] & HAVESEEN)
+	{
+		p = 0;
+		if (flag)
+			cursors ();
+		switch (flag)
 		{
-			p = 0;
-			if (flag)
-	cursors ();
-			switch (flag)
-	{
-	case 1:
-		p = "\n%s hits the %s";
-		break;
-	case 2:
-		p = "\n%s hits and kills the %s";
-		break;
-	case 3:
-		p = "\nThe %s%s gets teleported";
-		who = "";
-		break;
-	};
-			if (p)
-	{
-		lprintf (p, who, monster[tmp].name);
-	}
+		case 1:
+			p = "\n%s hits the %s";
+			break;
+		case 2:
+			p = "\n%s hits and kills the %s";
+			break;
+		case 3:
+			p = "\nThe %s%s gets teleported";
+			who = "";
+			break;
+		};
+		if (p)
+		{
+			lprintf (p, who, monster[tmp].name);
 		}
+	}
 	/*  if (yrepcount>1) { know[aa][bb] &= 2;  know[cc][dd] &= 2; return; } */
 	if (know[aa][bb] & HAVESEEN)
 		show1cell (aa, bb);

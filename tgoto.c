@@ -120,31 +120,31 @@ static char output[64];		/* Converted string */
 const char *
 atgoto (const char *cm, int destcol, int destline)
 {
-  if (cm == NULL)
-    {
-      return ("OOPS");
-    }
-  else
-    {
-      in = cm;
-      out = output;
-      args[0] = destline;
-      args[1] = destcol;
-      pcount = 0;
-      while (*in != '\0')
+	if (cm == NULL)
 	{
-	  if (*in != '%')
-	    {
-	      *out++ = *in++;
-	    }
-	  else
-	    {
-	      process ();
-	    }
+		return ("OOPS");
 	}
-      *out = '\0';		/* rde 18-DEC-86: don't assume out was all zeros */
-      return (output);
-    }
+	else
+	{
+		in = cm;
+		out = output;
+		args[0] = destline;
+		args[1] = destcol;
+		pcount = 0;
+		while (*in != '\0')
+		{
+			if (*in != '%')
+			{
+				*out++ = *in++;
+			}
+			else
+			{
+				process ();
+			}
+		}
+		*out = '\0';		/* rde 18-DEC-86: don't assume out was all zeros */
+		return (output);
+	}
 }
 
 /*
@@ -213,53 +213,53 @@ atgoto (const char *cm, int destcol, int destline)
 static void
 process (void)
 {
-  int temp;
+	int temp;
 
-  in++;
-  switch (*in++)
-    {
-    case 'd':
-      sprintf (out, "%d", args[pcount++]);
-      out = &output[strlen (output)];
-      break;
-    case '2':
-      sprintf (out, "%02d", args[pcount++]);
-      out += 2;
-/*
-    out = &output[strlen(output)];
-*/
-      break;
-    case '3':
-      sprintf (out, "%03d", args[pcount++]);
-      out = &output[strlen (output)];
-      break;
-    case '.':
-      *out++ = (char) args[pcount++];
-      break;
-    case '+':
-      *out++ = (char) args[pcount++] + *in++;
-      break;
-    case '>':
-      if (args[pcount] > *in++)
+	in++;
+	switch (*in++)
 	{
-	  args[pcount] += *in++;
+	case 'd':
+		sprintf (out, "%d", args[pcount++]);
+		out = &output[strlen (output)];
+		break;
+	case '2':
+		sprintf (out, "%02d", args[pcount++]);
+		out += 2;
+		/*
+		    out = &output[strlen(output)];
+		*/
+		break;
+	case '3':
+		sprintf (out, "%03d", args[pcount++]);
+		out = &output[strlen (output)];
+		break;
+	case '.':
+		*out++ = (char) args[pcount++];
+		break;
+	case '+':
+		*out++ = (char) args[pcount++] + *in++;
+		break;
+	case '>':
+		if (args[pcount] > *in++)
+		{
+			args[pcount] += *in++;
+		}
+		else
+		{
+			in++;
+		}
+		break;
+	case 'r':
+		temp = args[pcount];
+		args[pcount] = args[pcount + 1];
+		args[pcount + 1] = temp;
+		break;
+	case 'i':
+		args[pcount]++;
+		args[pcount + 1]++;
+		break;
+	case '%':
+		*out++ = '%';
+		break;
 	}
-      else
-	{
-	  in++;
-	}
-      break;
-    case 'r':
-      temp = args[pcount];
-      args[pcount] = args[pcount + 1];
-      args[pcount + 1] = temp;
-      break;
-    case 'i':
-      args[pcount]++;
-      args[pcount + 1]++;
-      break;
-    case '%':
-      *out++ = '%';
-      break;
-    }
 }

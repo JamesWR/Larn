@@ -16,16 +16,16 @@ void
 nap (int x)
 {
 
-  /* eliminate chance for infinite loop */
-  if (x <= 0)
-    {
+	/* eliminate chance for infinite loop */
+	if (x <= 0)
+	{
 
-      return;
-    }
+		return;
+	}
 
-  lflush ();
+	lflush ();
 
-  Sleep (x);
+	Sleep (x);
 }
 #endif
 
@@ -46,26 +46,26 @@ void
 nap (int x)
 {
 
-  /* eliminate chance for infinite loop */
-  if (x <= 0)
-    {
+	/* eliminate chance for infinite loop */
+	if (x <= 0)
+	{
 
-      return;
-    }
+		return;
+	}
 
-  lflush ();
+	lflush ();
 
-/* removed *1000, doing this simply makes it wait much longer
- * I know usleep acts differently (it usually needs slowing down) to really act as 'seconds'
- * But this makes the game a little more responsive.  We don't need exact seconds, just a tiny
- * amount of wait is ok.
- * 
- * This will be replaced by posix compliant functionality later anyway.
- */
+	/* removed *1000, doing this simply makes it wait much longer
+	 * I know usleep acts differently (it usually needs slowing down) to really act as 'seconds'
+	 * But this makes the game a little more responsive.  We don't need exact seconds, just a tiny
+	 * amount of wait is ok.
+	 *
+	 * This will be replaced by posix compliant functionality later anyway.
+	 */
 
-/* added * 500 as a trade off.  Some functionality appeared too quickly using
- * no slowdown. */
-  usleep (x * 500);
+	/* added * 500 as a trade off.  Some functionality appeared too quickly using
+	 * no slowdown. */
+	usleep (x * 500);
 }
 
 

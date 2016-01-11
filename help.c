@@ -21,50 +21,50 @@ static int openhelp (void);
 void
 help (void)
 {
-  int i, j;
+	int i, j;
 
 
-  /* open the help file and get # pages 
-   */
-  if ((j = openhelp ()) < 0)
-    return;
+	/* open the help file and get # pages
+	 */
+	if ((j = openhelp ()) < 0)
+		return;
 
-  /* skip over intro message 
-   */
-  for (i = 0; i < 23; i++)
-    lgetl ();
-  --j;
+	/* skip over intro message
+	 */
+	for (i = 0; i < 23; i++)
+		lgetl ();
+	--j;
 
-  for (; j > 0; j--)
-    {
-      clear ();
-
-      for (i = 0; i < 23; i++)
-	lprcat (lgetl ());	/* print out each line that we read in */
-
-      if (j > 1)
+	for (; j > 0; j--)
 	{
-	  lprcat ("    ---- Press ");
-	  lstandout ("return");
-	  lprcat (" to exit, ");
-	  lstandout ("space");
-	  lprcat (" for more help ---- ");
-	  i = 0;
-	  while ((i != ' ') && (i != '\n') && (i != '\33'))
-	    i = ttgetch ();
-	  if ((i == '\n') || (i == '\33'))
-	    {
-	      lrclose ();
-	      setscroll ();
-	      drawscreen ();
-	      return;
-	    }
-	}
-    }
+		clear ();
 
-  lrclose ();
-  retcont ();
-  drawscreen ();
+		for (i = 0; i < 23; i++)
+			lprcat (lgetl ());	/* print out each line that we read in */
+
+		if (j > 1)
+		{
+			lprcat ("    ---- Press ");
+			lstandout ("return");
+			lprcat (" to exit, ");
+			lstandout ("space");
+			lprcat (" for more help ---- ");
+			i = 0;
+			while ((i != ' ') && (i != '\n') && (i != '\33'))
+				i = ttgetch ();
+			if ((i == '\n') || (i == '\33'))
+			{
+				lrclose ();
+				setscroll ();
+				drawscreen ();
+				return;
+			}
+		}
+	}
+
+	lrclose ();
+	retcont ();
+	drawscreen ();
 }
 
 
@@ -75,31 +75,31 @@ help (void)
 void
 welcome (void)
 {
-  int i;
-  /* intermediate translation buffer */
-  char tmbuf[128];
+	int i;
+	/* intermediate translation buffer */
+	char tmbuf[128];
 
-  /* open the help file */
-  if (openhelp () < 0)
-    {
+	/* open the help file */
+	if (openhelp () < 0)
+	{
 
-      return;
-    }
+		return;
+	}
 
-  clear ();
+	clear ();
 
-  for (i = 0; i < 23; i++)
-    {
+	for (i = 0; i < 23; i++)
+	{
 
-      /* intercept \33's */
-      tmcapcnv (tmbuf, lgetl ());
-      lprcat (tmbuf);
-    }
+		/* intercept \33's */
+		tmcapcnv (tmbuf, lgetl ());
+		lprcat (tmbuf);
+	}
 
-  lrclose ();
+	lrclose ();
 
-  /* press return to continue */
-  retcont ();
+	/* press return to continue */
+	retcont ();
 }
 
 
@@ -110,13 +110,13 @@ welcome (void)
 void
 retcont (void)
 {
-  cursor (1, 24);
-  lprcat ("Press ");
-  lstandout ("return");
-  lprcat (" to continue: ");
-  while (ttgetch () != '\n');
+	cursor (1, 24);
+	lprcat ("Press ");
+	lstandout ("return");
+	lprcat (" to continue: ");
+	while (ttgetch () != '\n');
 
-  setscroll ();
+	setscroll ();
 
 }
 
@@ -129,19 +129,19 @@ static int
 openhelp (void)
 {
 
-  if (lopen (helpfile) < 0)
-    {
+	if (lopen (helpfile) < 0)
+	{
 
-      lprintf ("Can't open help file \"%s\" ", helpfile);
-      lflush ();
-      nap (4000);
-      drawscreen ();
-      setscroll ();
+		lprintf ("Can't open help file \"%s\" ", helpfile);
+		lflush ();
+		nap (4000);
+		drawscreen ();
+		setscroll ();
 
-      return -1;
-    }
+		return -1;
+	}
 
-  resetscroll ();
+	resetscroll ();
 
-  return (lgetc () - '0');
+	return (lgetc () - '0');
 }
